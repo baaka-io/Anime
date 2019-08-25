@@ -17,8 +17,8 @@ This is a website developed for personal use.
 
 ### Frontend
 
-I will be using vuejs and vuetify for the frontend. Vuex won't be needed because I don't really have any state to save.
-The frontend will have a nice looking ui that aligns with the material design specification.
+I will be using reactjs (hooks) together with redux for the frontend.
+I am still not sure with UI library to use for styles. (Bulma, Material, ...)
 
 ### Backend
 

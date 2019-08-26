@@ -4,8 +4,10 @@
   "description": "",
   "main": "build/index.js",
   "dependencies": {
+    "@types/morgan": "^1.7.37",
     "express": "^4.17.1",
     "jest": "^24.9.0",
+    "morgan": "^1.9.1",
     "ramda": "^0.26.1",
     "tsc-watch": "^2.4.0"
   },

@@ -1,7 +1,7 @@
 # detach from a tmux session if in one
 session_name="baaka_io-anime"
 
-if [ $(tmux ls | grep -q $session_name) ]; then
+if [ $(tmux ls | grep -c $session_name) ]; then
 	echo "$session_name session already running"
 else
 	tmux new -d -s $session_name

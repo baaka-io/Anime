@@ -1,0 +1,31 @@
+{
+  "name": "baaka.io-anime-backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "build/index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jest": "^24.9.0",
+    "ramda": "^0.26.1",
+    "tsc-watch": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "dev": "tsc-watch --onSuccess 'node .'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baaka-io/Anime.git"
+  },
+  "author": "TimUntersberger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baaka-io/Anime/issues"
+  },
+  "homepage": "https://github.com/baaka-io/Anime#readme"
+}

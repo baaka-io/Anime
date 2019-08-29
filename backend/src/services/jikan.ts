@@ -39,7 +39,8 @@ export const getAnimesInSeason: (year: number, season: AnimeSeason) => Promise<A
 	pipe(
 		(year: number, season: AnimeSeason) => `${seasonUrl}/${year}/${season}`,
 		fetch,
-		then(responseToJson)
+		then(responseToJson),
+		then(res => res.anime)
 	)
 
 export const getAnimesInCurrentSeason = (): Promise<Anime[]> =>

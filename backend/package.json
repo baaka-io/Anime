@@ -2,7 +2,7 @@
   "name": "baaka.io-anime-backend",
   "version": "0.0.1",
   "description": "",
-  "main": "build/index.js",
+  "main": "./build/index.js",
   "dependencies": {
     "@types/morgan": "^1.7.37",
     "@types/node-fetch": "^2.5.0",
@@ -11,11 +11,15 @@
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0",
     "ramda": "^0.26.1",
+    "source-scraper": "^1.2.14",
     "tsc-watch": "^2.4.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.1",
     "@types/jest": "^24.0.18",
+    "@types/jsdom": "^12.2.4",
+    "@types/puppeteer": "^1.19.1",
+    "@types/ramda": "^0.26.21",
     "@types/supertest": "^2.0.8",
     "husky": "^3.0.4",
     "supertest": "^4.0.2",
@@ -30,7 +34,7 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "tsc-watch --onSuccess 'node .'"
+    "dev": "tsc-watch --onSuccess \"node build/index.js\""
   },
   "repository": {
     "type": "git",

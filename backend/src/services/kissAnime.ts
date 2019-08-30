@@ -1,10 +1,11 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Page } from "puppeteer";
+import { insert, tap } from "ramda"
 import slug from "slug"
 
 let browser: puppeteer.Browser | null = null
 let page: puppeteer.Page | null = null
 
-const launchBrowser =  () => 
+const launchBrowser = () => 
 	puppeteer.launch({
 		args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
 	})
@@ -32,19 +33,29 @@ const goToUrl = async (url: string, consumer: GoToUrlConsumer): ReturnType<GoToU
 		return consumer(page)
 	})
 
-export const getUrlOfAnimeEpisode = async (title: string, episode: number): Promise<string | null> => {
-	// if the title contains *nd season and it fails also try season *
-	const slugifiedTitle = slug(title)
-	const paddedEpisode = new String(episode).padStart(3, "0")
-	const url = `https://kissanime.ru/Anime/${slugifiedTitle}/Episode-${paddedEpisode}?id=2&s=rapidvideo`
-	return await goToUrl(url, async page => {
-		const iframeHandle = await page.$("#my_video_1")
-		if(iframeHandle != null){
-			const iframe = await iframeHandle.contentFrame()
-			if(iframe != null){
-				return iframe.$eval('#videojs_html5_api', el => el.children[el.children.length - 1].getAttribute("src"))
-			}
+const getVideoUrlOfPage = async (page: Page): Promise<string | null> => {
+	const iframeHandle = await page.$("#my_video_1")
+	if(iframeHandle != null){
+		const iframe = await iframeHandle.contentFrame()
+		if(iframe != null){
+			return iframe.$eval('#videojs_html5_api', el => el.children[el.children.length - 1].getAttribute("src"))
 		}
-		return Promise.reject("Something went wrong while parsing the html")
-	})
+	}
+	return null
+}
+
+const createEpisodeUrl = (title: string, episode: number): string =>
+	`https://kissanime.ru/Anime/${title}/Episode-${new String(episode).padStart(3, "0")}?id=2&s=rapidvideo`
+
+const getVideoUrlOfAnimeEpisode = (title: string, episode: number): Promise<string | null> =>
+	goToUrl(createEpisodeUrl(slug(title), episode), getVideoUrlOfPage)
+
+export const getUrlOfAnimeEpisode = async (title: string, episode: number): Promise<string | null> => {
+	const videoUrl = await getVideoUrlOfAnimeEpisode(title, episode)
+	if(videoUrl == null && title.includes("2nd Season")){
+		const titleTokens = title.replace("nd Season", "").split(" ")
+		const alternativeTitle = insert(titleTokens.length - 1, "Season", titleTokens).join(" ")
+		return getVideoUrlOfAnimeEpisode(alternativeTitle, episode)
+	}
+	else return videoUrl
 }

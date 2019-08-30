@@ -7,7 +7,7 @@ const port = process.env.PORT || 8000
 const server = http.createServer(app)
 
 getAnimesInCurrentSeason().then(animes => {
-	const anime = animes[3]
+	const anime = animes[0]
 	getUrlOfAnimeEpisode(anime.title, 1).then(console.log)
 }) 
 

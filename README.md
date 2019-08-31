@@ -24,3 +24,5 @@ I am still not sure with UI library to use for styles. (Bulma, Material, ...)
 
 The backend will be basically stateless besides a cache for Jikan (maybe a cache for episodes later on). It will act as a sort of middleman for kissanime (using opensourcescraper from openbyte) and myanimelist (using jikan).
 For perfomance and rate limiting reasons I will use the cache capabilities of jikan to not exceed the rate limit or even get blocked.
+
+[design inspiration](https://dribbble.com/shots/6745127-Anidub-Redesign)

@@ -1,5 +1,5 @@
 import fetch, { Response } from "node-fetch"
-import { then, pipe, map, join, curry, defaultTo } from "ramda"
+import { then, pipe, map, join, curry, defaultTo, cond, always } from "ramda"
 
 export type SearchAnimeOptions = {
 	q?: string
@@ -39,9 +39,23 @@ export const getAnimesInSeason: (year: number, season: AnimeSeason) => Promise<A
 	pipe(
 		(year: number, season: AnimeSeason) => `${seasonUrl}/${year}/${season}`,
 		fetch,
-		then(responseToJson)
+		then(responseToJson),
+		then(res => res.anime)
 	)
 
-export const getAnimesInCurrentSeason = (): Promise<Anime[]> =>
-	getAnimesInSeason(2019, "spring")
+const between = (x: number, y: number) => (z: number) => x >= z && x <= y
 
+const dateToSeasonName = (date: Date) => cond<number, AnimeSeason>([
+	[between(1, 3), always("winter")],
+	[between(4, 6), always("spring")],
+	[between(7, 9), always("summer")],
+	[between(10, 12), always("fall")]
+])(date.getMonth() + 1)
+
+const getCurrentSeason = (): [number, AnimeSeason] => {
+	const date = new Date()
+	return [date.getFullYear(), dateToSeasonName(date)]
+}
+
+export const getAnimesInCurrentSeason = (): Promise<Anime[]> =>
+	getAnimesInSeason(...getCurrentSeason())

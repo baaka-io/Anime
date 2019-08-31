@@ -3,11 +3,13 @@ import express from "express"
 import morgan from "morgan"
 /* Routes */
 import healthCheck from "./routes/healthCheck"
+import anime from "./routes/anime"
 
 const app = express()
 
-app.use(morgan("dev", {immediate: true}))
+app.use(morgan("dev"))
 
 app.use("/healthCheck", healthCheck)
+app.use("/anime", anime)
 
 export default app

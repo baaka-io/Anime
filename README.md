@@ -20,6 +20,13 @@ This is a website developed for personal use.
 I will be using reactjs (hooks) together with redux for the frontend.
 I am still not sure with UI library to use for styles. (Bulma, Material, ...)
 
+#### Navigations
+
+* Discover
+* Season
+* Schedule (Maybe)
+* Account (Future)
+
 ### Backend
 
 The backend will be basically stateless besides a cache for Jikan (maybe a cache for episodes later on). It will act as a sort of middleman for kissanime (using opensourcescraper from openbyte) and myanimelist (using jikan).

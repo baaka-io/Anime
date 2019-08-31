@@ -1,14 +1,33 @@
 import fetch, { Response } from "node-fetch"
-import { then, pipe, map, join, curry, defaultTo, cond, always } from "ramda"
+import { then, pipe, map, join, curry, defaultTo, cond, always, tap } from "ramda"
+import { AnimeType, AnimeStatus, AnimeRating, AnimeGenre, AnimeOrderBy, AnimeSort, MalId, Anime, AnimeSeason } from "../entities/Anime";
 
 export type SearchAnimeOptions = {
 	q?: string
 	page?: number
+	type?: AnimeType
+	status?: AnimeStatus
+	rated?: AnimeRating
+	genre?: AnimeGenre[]
+	score?: number
+	/**
+	 * yyyy-mm-dd
+	 */
+	start_date?: string
+	end_date?: string
+	genre_exclude?: boolean
+	limit?: number
+	order_by?: AnimeOrderBy
+	sort?: AnimeSort
+	/**
+	 * mal id of producer
+	 */
+	producer?: MalId
+	/**
+	 * mal id of magazine
+	 */
+	magazine?: MalId
 }
-
-export type AnimeSeason = "summer" | "spring" | "fall" | "winter"
-
-export type Anime = any
 
 const baseUrl = "https://api.jikan.moe/v3"
 const animeUrl = baseUrl + "/search/anime"
@@ -32,7 +51,8 @@ export const searchAnime: (options: SearchAnimeOptions) => Promise<Anime[]> =
 	pipe(
 		generateUrl(animeUrl),
 		fetch,
-		then(responseToJson)
+		then(responseToJson),
+		then(res => res.results)
 	)
 
 export const getAnimesInSeason: (year: number, season: AnimeSeason) => Promise<Anime[]> =
@@ -46,10 +66,10 @@ export const getAnimesInSeason: (year: number, season: AnimeSeason) => Promise<A
 const between = (x: number, y: number) => (z: number) => x >= z && x <= y
 
 const dateToSeasonName = (date: Date) => cond<number, AnimeSeason>([
-	[between(1, 3), always("winter")],
-	[between(4, 6), always("spring")],
-	[between(7, 9), always("summer")],
-	[between(10, 12), always("fall")]
+	[between(1, 3), always(AnimeSeason.Winter)],
+	[between(4, 6), always(AnimeSeason.Spring)],
+	[between(7, 9), always(AnimeSeason.Summer)],
+	[between(10, 12), always(AnimeSeason.Fall)]
 ])(date.getMonth() + 1)
 
 const getCurrentSeason = (): [number, AnimeSeason] => {

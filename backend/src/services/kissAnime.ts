@@ -1,5 +1,5 @@
 import puppeteer, { Page } from "puppeteer";
-import { insert, tap } from "ramda"
+import { insert } from "ramda"
 
 let browser: puppeteer.Browser | null = null
 let page: puppeteer.Page | null = null
@@ -31,6 +31,10 @@ const goToUrl = async (url: string, consumer: GoToUrlConsumer): ReturnType<GoToU
 			await page.waitForNavigation()
 		return consumer(page)
 	})
+
+export async function byPassCloudflare(){
+	return goToUrl("https://kissanime.ru", () => Promise.resolve(null))
+}
 
 const getVideoUrlOfPage = async (page: Page): Promise<string | null> => {
 	const iframeHandle = await page.$("#my_video_1")

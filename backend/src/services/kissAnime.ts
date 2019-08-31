@@ -1,6 +1,5 @@
 import puppeteer, { Page } from "puppeteer";
 import { insert, tap } from "ramda"
-import slug from "slug"
 
 let browser: puppeteer.Browser | null = null
 let page: puppeteer.Page | null = null
@@ -48,13 +47,13 @@ const createEpisodeUrl = (title: string, episode: number): string =>
 	`https://kissanime.ru/Anime/${title}/Episode-${new String(episode).padStart(3, "0")}?id=2&s=rapidvideo`
 
 const getVideoUrlOfAnimeEpisode = (title: string, episode: number): Promise<string | null> =>
-	goToUrl(createEpisodeUrl(slug(title), episode), getVideoUrlOfPage)
+	goToUrl(createEpisodeUrl(title, episode), getVideoUrlOfPage)
 
 export const getUrlOfAnimeEpisode = async (title: string, episode: number): Promise<string | null> => {
 	const videoUrl = await getVideoUrlOfAnimeEpisode(title, episode)
-	if(videoUrl == null && title.includes("2nd Season")){
-		const titleTokens = title.replace("nd Season", "").split(" ")
-		const alternativeTitle = insert(titleTokens.length - 1, "Season", titleTokens).join(" ")
+	if(videoUrl == null && title.includes("2nd-Season")){
+		const titleTokens = title.replace("nd-Season", "").split("-")
+		const alternativeTitle = insert(titleTokens.length - 1, "Season", titleTokens).join("-")
 		return getVideoUrlOfAnimeEpisode(alternativeTitle, episode)
 	}
 	else return videoUrl

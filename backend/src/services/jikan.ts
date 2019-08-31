@@ -1,7 +1,5 @@
 import fetch, { Response } from "node-fetch"
-import { then, pipe, map, join, curry, defaultTo } from "ramda"
-import cond from "ramda/es/cond";
-import always from "ramda/es/always";
+import { then, pipe, map, join, curry, defaultTo, cond, always } from "ramda"
 
 export type SearchAnimeOptions = {
 	q?: string
@@ -61,4 +59,3 @@ const getCurrentSeason = (): [number, AnimeSeason] => {
 
 export const getAnimesInCurrentSeason = (): Promise<Anime[]> =>
 	getAnimesInSeason(...getCurrentSeason())
-

@@ -1,5 +1,11 @@
 export type MalId = number
 export type Anime = any
+export type AnimeRelease = {
+	title: string
+	info: string
+	isMovie: boolean
+	isPreview: boolean
+}
 export enum AnimeOrderBy{
     Title = "title",
     StartDate = "start_date",

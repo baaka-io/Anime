@@ -1,13 +1,14 @@
 import { Router } from "express"
-import { getUrlOfAnimeEpisode } from "../services/kissAnime";
+import { getUrlOfAnimeEpisode, getNewestAnimeEpisodes } from "../services/kissAnime";
 import { memoizeWith, cond, equals, always, T, identity } from "ramda";
 import { IsOptional, IsString, MinLength, IsNumber, IsPositive, IsArray, IsEnum, IsBoolean } from "class-validator"
 import { ValidatedRequest, validateQuery } from "../middlewares/validation";
 import { searchAnime, SearchAnimeOptions } from "../services/jikan";
 //@ts-ignore
 import proxy from "http-proxy-stream"
-import { AnimeType, AnimeStatus, AnimeRating, AnimeGenre, AnimeOrderBy, AnimeSort, MalId } from "../entities/Anime";
+import { AnimeType, AnimeStatus, AnimeRating, AnimeGenre, AnimeOrderBy, AnimeSort, MalId, AnimeRelease } from "../entities/anime";
 import { arrayQueryParams } from "../middlewares/arrayQueryParams";
+import { getCurrentAnimeReleases } from "../core/animeReleases";
 
 const getUrlOfAnimeEpisodeMemoized = memoizeWith((title, episode) => title + episode, getUrlOfAnimeEpisode)
 
@@ -100,6 +101,9 @@ const router = Router()
         const options: SearchAnimeOptions = queryParamsToSearchAnimeOptions(req.query)
         const animes = await searchAnime(options)
         res.json(animes)
+    })
+    .get("/releases", async (req, res) => {
+        res.json(getCurrentAnimeReleases())
     })
 
 export default router

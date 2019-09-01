@@ -1,8 +1,9 @@
 import { Page } from "puppeteer";
 import { insert } from "ramda"
-import { goToUrl } from "./puppeteer"
+import { goToUrl, useNewPage, byPassCloudflare } from "./puppeteer"
+import { AnimeRelease } from "../entities/Anime";
 
-export async function byPassCloudflare(){
+export async function initKissAnimeService(){
 	return goToUrl("https://kissanime.ru", () => Promise.resolve(null))
 }
 
@@ -33,8 +34,9 @@ export const getUrlOfAnimeEpisode = async (title: string, episode: number): Prom
 	else return videoUrl
 }
 
-export const getNewestAnimeEpisodes = async (): Promise<any> => 
-	goToUrl("https://kissanime.ru", async (page: Page) => {
+export const getNewestAnimeEpisodes = async (): Promise<AnimeRelease[]> => 
+	useNewPage(async (page: Page) => {
+		await byPassCloudflare(page, page.goto("https://kissanime.ru"))
 		const releases = await page.$$eval(".barContent .scrollable .items div a", as => as.map(a => ({
 			title: (a.getAttribute("href") as string).replace("Anime/", ""),
 			info: (a.getAttribute("title") as string)
@@ -67,6 +69,3 @@ export const getNewestAnimeEpisodes = async (): Promise<any> =>
 				}
 			})
 	})
-
-
-getNewestAnimeEpisodes().then(console.log)

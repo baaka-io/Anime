@@ -1,6 +1,6 @@
 import fetch, { Response } from "node-fetch"
 import { then, pipe, map, join, curry, defaultTo, cond, always, tap } from "ramda"
-import { AnimeType, AnimeStatus, AnimeRating, AnimeGenre, AnimeOrderBy, AnimeSort, MalId, Anime, AnimeSeason } from "../entities/Anime";
+import { AnimeType, AnimeStatus, AnimeRating, AnimeGenre, AnimeOrderBy, AnimeSort, MalId, Anime, AnimeSeason } from "../entities/anime";
 
 export type SearchAnimeOptions = {
 	q?: string

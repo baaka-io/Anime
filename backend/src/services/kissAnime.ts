@@ -1,38 +1,9 @@
-import puppeteer, { Page } from "puppeteer";
+import { Page } from "puppeteer";
 import { insert } from "ramda"
+import { goToUrl, useNewPage, byPassCloudflare } from "./puppeteer"
+import { AnimeRelease } from "../entities/Anime";
 
-let browser: puppeteer.Browser | null = null
-let page: puppeteer.Page | null = null
-
-const launchBrowser = () => 
-	puppeteer.launch({
-		args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
-	})
-
-type PageConsumer = (page: puppeteer.Page, isNewPage: boolean) => Promise<string | null>
-
-const usePage = async (consumer: PageConsumer): ReturnType<PageConsumer> => {
-	let isNewPage = false
-	if(browser == null)
-		browser = await launchBrowser()
-	if(page == null){
-		isNewPage = true
-		page = await browser.newPage()
-	}
-	return consumer(page, isNewPage)
-}
-
-type GoToUrlConsumer = (page: puppeteer.Page) => Promise<string | null>
-
-const goToUrl = async (url: string, consumer: GoToUrlConsumer): ReturnType<GoToUrlConsumer> =>
-	usePage(async (page, isNewPage) => {
-		await page.goto(url)
-		if(isNewPage)
-			await page.waitForNavigation()
-		return consumer(page)
-	})
-
-export async function byPassCloudflare(){
+export async function initKissAnimeService(){
 	return goToUrl("https://kissanime.ru", () => Promise.resolve(null))
 }
 
@@ -62,3 +33,39 @@ export const getUrlOfAnimeEpisode = async (title: string, episode: number): Prom
 	}
 	else return videoUrl
 }
+
+export const getNewestAnimeEpisodes = async (): Promise<AnimeRelease[]> => 
+	useNewPage(async (page: Page) => {
+		await byPassCloudflare(page, page.goto("https://kissanime.ru"))
+		const releases = await page.$$eval(".barContent .scrollable .items div a", as => as.map(a => ({
+			title: (a.getAttribute("href") as string).replace("Anime/", ""),
+			info: (a.getAttribute("title") as string)
+		})))
+		return releases
+			.map(release => {
+				if(release.info.includes("Movie")){
+					return {
+						title: release.title,
+						info: "Movie",
+						isMovie: true,
+						isPreview: false
+					}
+				}
+				else if(release.info.includes("Preview")){
+					return {
+						title: release.title,
+						info: "Preview",
+						isMovie: false,
+						isPreview: true
+					}
+				}
+				else {
+					return {
+						title: release.title,
+						info: release.info,
+						isMovie: false,
+						isPreview: true
+					}
+				}
+			})
+	})

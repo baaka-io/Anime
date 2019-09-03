@@ -27,7 +27,7 @@ export class AnimeSearchOptions {
   magazine?: MalId | null
 }
 
-const baseUrl = "localhost:8000/anime"
+const baseUrl = (process.env.APP_BASE_URL || "localhost:8000") + "/anime"
 
 const optionsToQueryParams = (queryParams: any) =>
   Object.keys(queryParams)

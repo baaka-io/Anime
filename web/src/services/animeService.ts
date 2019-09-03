@@ -27,7 +27,7 @@ export class AnimeSearchOptions {
   magazine?: MalId | null
 }
 
-const baseUrl = (process.env.APP_BASE_URL || "localhost:8000") + "/anime"
+const baseUrl = (process.env.APP_BASE_URL || "http://localhost:8000") + "/anime"
 
 const optionsToQueryParams = (queryParams: any) =>
   Object.keys(queryParams)
@@ -37,7 +37,7 @@ const optionsToQueryParams = (queryParams: any) =>
 
 export function search(options: AnimeSearchOptions): Promise<Anime[]> {
   return fetch(
-    `http://${baseUrl}/search?${optionsToQueryParams({
+    `${baseUrl}/search?${optionsToQueryParams({
       orderBy: AnimeOrderBy.Score,
       ...options
     })}`

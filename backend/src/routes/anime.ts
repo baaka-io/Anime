@@ -112,6 +112,7 @@ const queryParamsToSearchAnimeOptions = (queryParams: any) =>
 const router = Router()
   .get(
     "/video",
+    arrayQueryParams([]),
     validateQuery(VideoQuery),
     async (req: ValidatedRequest<VideoQuery>, res) => {
       const { title, episode } = req.query

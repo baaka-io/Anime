@@ -2,18 +2,22 @@
 
 This is a website developed for personal use.
 
+## IF ERROR BABEL VERSION NOT MATCH
+
+try to install babel core seperately
+
 ## Initial ideas
 
 ### Supported functionality
 
-* List all animes (by using the paging functionaltiy of jikan)
-* Search all animes (by genre, title, ...)
-* Get information about anime (still not sure how big or how little information)
-  * I want to show all episodes, but I'm still not sure whether to show thumbnails. It would be really cool and aesthetically pleasing, but might be too hard to implement.
-    * Using the way to show the thumbnail of the video from below, but without controls achieves this feature. Don't think it is worth it.
-  * Important information: MAL always uses the third picture as anime cover.
-* Watch episodes
-  * Important side information to show the thumbnail of a video look at the following SO answer https://stackoverflow.com/a/43848097
+- List all animes (by using the paging functionaltiy of jikan)
+- Search all animes (by genre, title, ...)
+- Get information about anime (still not sure how big or how little information)
+  - I want to show all episodes, but I'm still not sure whether to show thumbnails. It would be really cool and aesthetically pleasing, but might be too hard to implement.
+    - Using the way to show the thumbnail of the video from below, but without controls achieves this feature. Don't think it is worth it.
+  - Important information: MAL always uses the third picture as anime cover.
+- Watch episodes
+  - Important side information to show the thumbnail of a video look at the following SO answer https://stackoverflow.com/a/43848097
 
 ### Frontend
 
@@ -22,10 +26,10 @@ I am still not sure with UI library to use for styles. (Bulma, Material, ...)
 
 #### Navigations
 
-* Discover
-* Season
-* Schedule (Maybe)
-* Account (Future)
+- Discover
+- Season
+- Schedule (Maybe)
+- Account (Future)
 
 ### Backend
 

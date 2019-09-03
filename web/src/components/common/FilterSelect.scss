@@ -1,0 +1,23 @@
+.filter-select_select-label {
+  color: #afafaf !important;
+  padding-left: 10px;
+  font-size: 0.8em;
+}
+
+.filter-select_select {
+  div {
+    background: none;
+    border: none;
+
+    span {
+      color: white;
+    }
+    span.ant-select-arrow {
+      color: rgba(255, 255, 255, 0.726);
+    }
+
+    &:focus {
+      outline: none !important;
+    }
+  }
+}

@@ -42,7 +42,8 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "tsc-watch --onSuccess \"node .\""
+    "dev": "tsc-watch --onSuccess \"node .\"",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

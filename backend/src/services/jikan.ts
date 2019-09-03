@@ -20,7 +20,7 @@ import {
   MalId,
   Anime,
   AnimeSeason
-} from "../entities/anime"
+} from "../entities/Anime"
 
 export type SearchAnimeOptions = {
   q?: string

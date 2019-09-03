@@ -1,0 +1,23 @@
+{
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": true
+      },
+      "antd"
+    ],
+    [
+      "import",
+      {
+        "libraryName": "ramda",
+        "libraryDirectory": "es",
+        "style": true
+      },
+      "ramda"
+    ],
+    ["react-hot-loader/babel"]
+  ]
+}

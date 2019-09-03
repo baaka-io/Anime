@@ -1,11 +1,11 @@
 {
-	"compilerOptions": {
-        "experimentalDecorators": true,
-		"esModuleInterop": true,
-		"sourceMap": true,
-		"target": "es6",
-		"jsx": "react",
-		"moduleResolution": "node",
-		"strict": true
-	}
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "strict": true
+  }
 }

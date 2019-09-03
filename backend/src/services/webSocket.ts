@@ -1,8 +1,8 @@
 import wss from "../wss"
-import { AnimeRelease } from "../entities/Anime";
+import { AnimeRelease } from "../entities/Anime"
 
 export const Anime = {
-    emitNewRelease(release: AnimeRelease){
-        wss.emit("Anime/newRelease", release)
-    }
+  emitNewRelease(release: AnimeRelease) {
+    wss.emit("Anime/newRelease", release)
+  }
 }

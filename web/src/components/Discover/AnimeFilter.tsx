@@ -31,7 +31,6 @@ import {
 
 import "./AnimeFilter.scss"
 import * as AnimeService from "../../services/animeService"
-import propSatisfies from "ramda/es/propSatisfies"
 
 const allOption = { text: "All", value: null }
 
@@ -134,19 +133,26 @@ export default function AnimeFilter(props: AnimeFilterProps) {
     ) as any[]
     setIsLoading(true)
     if (isInitialFetch === true) setIsInitialFetch(false)
-    AnimeService.search({
-      score: selectedMinimumScore,
-      status: selectedStatus,
-      type: selectedType,
-      rated: selectedRating,
-      page,
-      startDate:
-        selectedFromYear && formatDate(new Date(selectedFromYear!, 1, 31)),
-      genre: genres.length === 0 ? null : genres,
-      endDate: selectedToYear && formatDate(new Date(selectedToYear!, 12, 31))
-    })
+    const abortController = new AbortController()
+
+    AnimeService.search(
+      {
+        score: selectedMinimumScore,
+        status: selectedStatus,
+        type: selectedType,
+        rated: selectedRating,
+        page,
+        startDate:
+          selectedFromYear && formatDate(new Date(selectedFromYear!, 1, 31)),
+        genre: genres.length === 0 ? null : genres,
+        endDate: selectedToYear && formatDate(new Date(selectedToYear!, 12, 31))
+      },
+      abortController.signal
+    )
       .then(setAnimes)
       .then(() => setIsLoading(false))
+
+    return abortController.abort
   }, [
     page,
     selectedGenres,

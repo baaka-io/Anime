@@ -35,11 +35,17 @@ const optionsToQueryParams = (queryParams: any) =>
     .map(key => `${key}=${queryParams[key]}`)
     .join("&")
 
-export function search(options: AnimeSearchOptions): Promise<Anime[]> {
+export function search(
+  options: AnimeSearchOptions,
+  abortSignal?: AbortSignal
+): Promise<Anime[]> {
   return fetch(
     `${baseUrl}/search?${optionsToQueryParams({
       orderBy: AnimeOrderBy.Score,
       ...options
-    })}`
+    })}`,
+    {
+      signal: abortSignal
+    }
   ).then(res => res.json())
 }

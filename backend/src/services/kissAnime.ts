@@ -20,11 +20,14 @@ const getVideoUrlOfPage = async (page: Page): Promise<string | null> => {
   return null
 }
 
+const getRandomNumber = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1)) + min
+
 const createEpisodeUrl = (title: string, episode: number): string =>
   `https://kissanime.ru/Anime/${title}/Episode-${new String(episode).padStart(
     3,
     "0"
-  )}?id=2&s=rapidvideo`
+  )}?id=${getRandomNumber(10000, 20000)}&s=rapidvideo`
 
 const getVideoUrlOfAnimeEpisode = (
   title: string,

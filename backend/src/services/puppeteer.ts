@@ -1,5 +1,4 @@
 import { Browser, Page, launch, Response } from "puppeteer"
-import all from "ramda/es/all"
 
 let browser: Browser | null = null
 let page: Page | null = null

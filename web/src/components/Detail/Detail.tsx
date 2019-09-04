@@ -1,40 +1,53 @@
 import React, { useState, useEffect } from "react"
-import { List, Typography } from "antd"
+import { List, Typography, Select } from "antd"
 import { getEpisodes, createVideoUrl } from "../../services/animeService"
 import { RouteComponentProps } from "react-router"
+import { reverse } from "ramda"
+import FilterSelect, { FilterSelectItem } from "../common/FilterSelect"
+import { unstable_batchedUpdates } from "react-dom"
 
 export default function Detail(props: RouteComponentProps) {
   const params = new URLSearchParams(props.location.search)
   const title = params.get("title")
   const [episodes, setEpisodes] = useState<string[]>([])
   const [url, setUrl] = useState("")
-  const [videoUrl, setVideoUrl] = useState("")
 
   useEffect(() => {
-    if (url != "") setVideoUrl(createVideoUrl(url))
-  }, [url])
-
-  useEffect(() => {
-    if (title) getEpisodes(title).then(setEpisodes)
+    if (title)
+      getEpisodes(title).then(x => {
+        unstable_batchedUpdates(() => {
+          const temp = reverse<string>(x.sort())
+          setEpisodes(temp)
+          setUrl(temp[0])
+        })
+      })
     else props.history.goBack()
   }, [])
 
+  const episodeSelectItems: FilterSelectItem[] = episodes.map((url: string) => {
+    return {
+      text: url.split("Episode-")[1].split("?")[0],
+      value: url
+    }
+  })
+
   return (
-    <div style={{ marginTop: "200px" }}>
-      <List>
-        {episodes.map((url, i) => (
-          <List.Item key={i} onClick={() => setUrl(url)}>
-            <Typography.Text style={{ color: "white", cursor: "pointer" }}>
-              Episode {episodes.length - i}
-            </Typography.Text>
-          </List.Item>
-        ))}
-      </List>
-      {videoUrl != "" && (
-        <video controls key={url}>
-          <source src={videoUrl} type="video/mp4"></source>
-        </video>
-      )}
+    <div
+      style={{
+        marginTop: "200px",
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column"
+      }}>
+      <FilterSelect
+        label="Episode"
+        onChange={setUrl}
+        items={episodeSelectItems}></FilterSelect>
+      <video style={{ width: "1280px", height: "720px" }} controls key={url}>
+        {url != "" && (
+          <source src={createVideoUrl(url)} type="video/mp4"></source>
+        )}
+      </video>
     </div>
   )
 }

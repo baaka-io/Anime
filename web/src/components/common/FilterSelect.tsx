@@ -15,7 +15,7 @@ export type FilterSelectProps = {
   onChange?: (option: any) => void
 }
 const FilterSelect: React.FC<FilterSelectProps> = props => (
-  <React.Fragment>
+  <div>
     <Row type="flex" justify="start">
       <Typography.Text className="filter-select_select-label">
         {props.label}
@@ -23,9 +23,12 @@ const FilterSelect: React.FC<FilterSelectProps> = props => (
     </Row>
     <Row>
       <Select
+        key={props.items.length}
         disabled={props.disabled}
         onSelect={(option: any) => props.onChange && props.onChange(option)}
-        defaultValue={props.defaultValue || props.items[0].value}
+        defaultValue={
+          props.defaultValue || (props.items[0] && props.items[0].value)
+        }
         dropdownMatchSelectWidth={false}
         className="filter-select_select">
         {props.items.map((item, i) => (
@@ -35,6 +38,6 @@ const FilterSelect: React.FC<FilterSelectProps> = props => (
         ))}
       </Select>
     </Row>
-  </React.Fragment>
+  </div>
 )
 export default FilterSelect

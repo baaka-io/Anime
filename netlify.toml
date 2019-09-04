@@ -1,9 +1,3 @@
-[build]
-  base = "web/"
-  publish = "dist"
-  command = "npm install && npm run build"
-  environment = { APP_BASE_URL = "https://api.baaka.io" }
-
 [[redirects]]
   from = "/*"
   to = "/"

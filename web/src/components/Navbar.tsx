@@ -1,6 +1,7 @@
 import React from "react"
 import { Row, Button } from "antd"
 import { useScroll } from "react-use"
+import { NavLink } from "react-router-dom"
 
 export default function Navbar(props: any) {
   const { y } = useScroll(props.div)
@@ -14,22 +15,49 @@ export default function Navbar(props: any) {
         marginLeft: "300px",
         marginTop: 30 - y + "px"
       }}>
-      <Button
-        type="link"
-        style={{
-          color: "white",
-          fontSize: "1.1em",
+      <NavLink
+        to="/"
+        exact
+        activeStyle={{
           borderBottom: "1px solid white",
-          paddingBottom: "5px"
+          paddingBottom: "5px",
+          color: "white"
+        }}
+        style={{
+          color: "#afafaf",
+          marginRight: "20px",
+          fontSize: "1.1em"
         }}>
         Discover
-      </Button>
-      <Button type="link" style={{ color: "#afafaf", fontSize: "1.1em" }}>
+      </NavLink>
+      <NavLink
+        to="/season"
+        activeStyle={{
+          borderBottom: "1px solid white",
+          paddingBottom: "5px",
+          color: "white"
+        }}
+        style={{
+          color: "#afafaf",
+          marginRight: "20px",
+          fontSize: "1.1em"
+        }}>
         Season
-      </Button>
-      <Button type="link" style={{ color: "#afafaf", fontSize: "1.1em" }}>
+      </NavLink>
+      <NavLink
+        to="/schedule"
+        activeStyle={{
+          borderBottom: "1px solid white",
+          paddingBottom: "5px",
+          color: "white"
+        }}
+        style={{
+          color: "#afafaf",
+          marginRight: "20px",
+          fontSize: "1.1em"
+        }}>
         Schedule
-      </Button>
+      </NavLink>
     </Row>
   )
 }

@@ -1,11 +1,5 @@
-import React, {
-  PropsWithChildren,
-  useState,
-  useEffect,
-  useRef,
-  Ref
-} from "react"
-import { Row, Col, Card, Typography, Rate, Spin, Pagination, Icon } from "antd"
+import React, { PropsWithChildren, useState, useEffect, useRef } from "react"
+import { Row, Col, Typography, Spin, Icon } from "antd"
 import FilterSelect, { FilterSelectItem } from "../common/FilterSelect"
 import {
   AnimeSeason,
@@ -32,6 +26,8 @@ import {
 import "./AnimeFilter.scss"
 import * as AnimeService from "../../services/animeService"
 import { unstable_batchedUpdates } from "react-dom"
+import slug from "slug"
+import { History } from "history"
 
 const allOption = { text: "All", value: null }
 
@@ -77,12 +73,17 @@ const formatDate = (date: Date) =>
 
 const AnimeCard: React.FC<{
   title: string
+  onClick: () => void
   image: string
   score: number
 }> = props => (
   <Col span={4} className="anime-filter_anime-card">
     <Row>
-      <img src={props.image} width="200px" height="300px"></img>
+      <img
+        src={props.image}
+        width="200px"
+        height="300px"
+        onClick={props.onClick}></img>
     </Row>
     <Row>
       <Typography.Text>{props.title}</Typography.Text>
@@ -90,10 +91,9 @@ const AnimeCard: React.FC<{
   </Col>
 )
 
-let isInitialFetch = true
-
 export type AnimeFilterProps = PropsWithChildren<{
   appRef: React.MutableRefObject<any>
+  history: History
 }>
 export default function AnimeFilter(props: AnimeFilterProps) {
   const animeGridRef = useRef<any>(null)
@@ -110,6 +110,7 @@ export default function AnimeFilter(props: AnimeFilterProps) {
     [key: number]: boolean
   }>({})
   const [page, setPage] = useState(1)
+  const [isInitialFetch, setIsInitialFetch] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFromYear, setSelectedFromYear] = useState(null)
   const [selectedToYear, setSelectedToYear] = useState(null)
@@ -120,7 +121,7 @@ export default function AnimeFilter(props: AnimeFilterProps) {
   const [animes, setAnimes] = useState<Anime>([])
 
   useEffect(() => {
-    if (!isInitialFetch && animeGridRef.current !== null) {
+    if (!isInitialFetch && props.appRef && animeGridRef.current !== null) {
       props.appRef.current.scrollTo({
         top: 800,
         left: 0,
@@ -134,7 +135,7 @@ export default function AnimeFilter(props: AnimeFilterProps) {
       (key: any) => selectedGenres[key]
     ) as any[]
     setIsLoading(true)
-    if (isInitialFetch === true) isInitialFetch = false
+    if (isInitialFetch === true) setIsInitialFetch(false)
     const abortController = new AbortController()
 
     AnimeService.search(
@@ -259,6 +260,12 @@ export default function AnimeFilter(props: AnimeFilterProps) {
             <div ref={animeGridRef} className="anime-filter_anime-card-grid">
               {animes.map((anime: any, i: number) => (
                 <AnimeCard
+                  onClick={() =>
+                    props.history.push(
+                      "/detail?title=" +
+                        slug(anime.title.replace(";", " "), { symbols: false })
+                    )
+                  }
                   key={i}
                   score={anime.score}
                   title={anime.title}

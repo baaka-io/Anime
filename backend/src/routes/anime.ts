@@ -27,7 +27,10 @@ import {
   MalId
 } from "../entities/Anime"
 import { arrayQueryParams } from "../middlewares/arrayQueryParams"
-import { getCurrentAnimeReleases } from "../core/animeReleases"
+import {
+  getCurrentAnimeReleases,
+  refetchAnimeReleases
+} from "../core/animeReleases"
 
 const getUrlOfAnimeEpisodeMemoized = memoizeWith(identity, getUrlOfAnimeEpisode)
 
@@ -141,6 +144,7 @@ const router = Router()
     }
   )
   .get("/releases", async (req, res) => {
+    await refetchAnimeReleases()
     res.json(getCurrentAnimeReleases())
   })
 

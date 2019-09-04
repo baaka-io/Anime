@@ -1,5 +1,4 @@
 import { Page } from "puppeteer"
-import { insert } from "ramda"
 import { goToUrl, useNewPage, byPassCloudflare } from "./puppeteer"
 import { AnimeRelease } from "../entities/Anime"
 
@@ -29,22 +28,18 @@ const createAnimeUrl = (title: string): string =>
 export const getUrlOfAnimeEpisode = async (
   subUrl: string
 ): Promise<string | null> => {
-  return goToUrl(createEpisodeUrl(subUrl), getVideoUrlOfPage)
+  return goToUrl(createEpisodeUrl(subUrl), getVideoUrlOfPage, ["script"])
 }
 
 export const getEpisodeUrlsOfAnime = async (title: string) => {
   const animeUrl = createAnimeUrl(title)
-  return goToUrl(
-    animeUrl,
-    async page =>
-      await page.evaluate(() =>
-        Array.from(
-          document.querySelectorAll("table.listing tbody tr td a")
-        ).map((link: Element) =>
-          link.getAttribute("href")!.replace("/Anime/", "")
-        )
+  return goToUrl(animeUrl, async page => {
+    return await page.evaluate(() =>
+      Array.from(document.querySelectorAll("table.listing tbody tr td a")).map(
+        (link: Element) => link.getAttribute("href")!.replace("/Anime/", "")
       )
-  )
+    )
+  })
 }
 
 export const getNewestAnimeEpisodes = async (): Promise<AnimeRelease[]> =>

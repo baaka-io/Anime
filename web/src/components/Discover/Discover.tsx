@@ -1,12 +1,15 @@
-import React, { Ref } from "react"
+import React from "react"
 import { Row, Col, Typography, Button, Icon, Rate } from "antd"
 import AnimeFilter from "./AnimeFilter"
+import { RouteComponentProps } from "react-router"
 
 import "./Discover.scss"
 
-export default function Discover(props: {
-  appRef: React.MutableRefObject<any>
-}) {
+export default function Discover(
+  props: {
+    appRef: React.MutableRefObject<any>
+  } & RouteComponentProps
+) {
   return (
     <div>
       <Row style={{ height: "85vh", overflow: "hidden" }}>
@@ -51,6 +54,9 @@ export default function Discover(props: {
           <Row>
             <Button
               ghost
+              onClick={() =>
+                props.history.push("/detail?title=" + "Vinland-Saga")
+              }
               shape="round"
               style={{
                 marginTop: "80px",
@@ -121,7 +127,9 @@ export default function Discover(props: {
         </div>
       </Row>
       <Row style={{ padding: "40px 150px" }}>
-        <AnimeFilter appRef={props.appRef}></AnimeFilter>
+        <AnimeFilter
+          appRef={props.appRef}
+          history={props.history}></AnimeFilter>
       </Row>
     </div>
   )

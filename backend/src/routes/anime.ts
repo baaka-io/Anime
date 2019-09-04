@@ -1,5 +1,8 @@
 import { Router } from "express"
-import { getUrlOfAnimeEpisode } from "../services/kissAnime"
+import {
+  getUrlOfAnimeEpisode,
+  getEpisodeUrlsOfAnime
+} from "../services/kissAnime"
 import { memoizeWith, cond, equals, always, T, identity } from "ramda"
 import {
   IsOptional,
@@ -26,10 +29,7 @@ import {
 import { arrayQueryParams } from "../middlewares/arrayQueryParams"
 import { getCurrentAnimeReleases } from "../core/animeReleases"
 
-const getUrlOfAnimeEpisodeMemoized = memoizeWith(
-  (title, episode) => title + episode,
-  getUrlOfAnimeEpisode
-)
+const getUrlOfAnimeEpisodeMemoized = memoizeWith(identity, getUrlOfAnimeEpisode)
 
 export class SearchQuery {
   @IsString()
@@ -84,10 +84,7 @@ export class SearchQuery {
 
 export class VideoQuery {
   @IsString()
-  title!: string
-
-  @IsNumber()
-  episode!: number
+  subUrl!: string
 }
 
 const queryParamToSearchQueryProp = cond<string, string>([
@@ -115,8 +112,8 @@ const router = Router()
     arrayQueryParams([]),
     validateQuery(VideoQuery),
     async (req: ValidatedRequest<VideoQuery>, res) => {
-      const { title, episode } = req.query
-      const url = await getUrlOfAnimeEpisodeMemoized(title, episode)
+      const { subUrl } = req.query
+      const url = await getUrlOfAnimeEpisodeMemoized(subUrl)
 
       if (url == null) {
         res.status(404).end()
@@ -126,6 +123,11 @@ const router = Router()
       proxy(req, { url }, res)
     }
   )
+  .get("/episodes", async (req, res) => {
+    const { title } = req.query
+    const urls = await getEpisodeUrlsOfAnime(title)
+    res.json(urls)
+  })
   .get(
     "/search",
     arrayQueryParams(["genre"]),

@@ -35,17 +35,31 @@ export type AnimeSearchResult = {
 
 const baseUrl = (process.env.APP_BASE_URL || "http://localhost:8000") + "/anime"
 
+function request(method: string, url: string, signal?: AbortSignal) {
+  return fetch(`${baseUrl}/${url}`, {
+    method,
+    signal
+  }).then(res => res.json())
+}
+
 export function search(
   options: AnimeSearchOptions,
   abortSignal?: AbortSignal
 ): Promise<AnimeSearchResult> {
-  return fetch(
-    `${baseUrl}/search?${objectToQueryParams({
+  return request(
+    "get",
+    `search?${objectToQueryParams({
       orderBy: AnimeOrderBy.Score,
       ...options
     })}`,
-    {
-      signal: abortSignal
-    }
-  ).then(res => res.json())
+    abortSignal
+  )
+}
+
+export function getEpisodes(title: string, abortSignal?: AbortSignal) {
+  return request("get", `episodes?title=${title}`, abortSignal)
+}
+
+export function createVideoUrl(subUrl: string) {
+  return `${baseUrl}/video?subUrl=${subUrl}`
 }

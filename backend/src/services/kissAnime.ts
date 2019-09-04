@@ -20,35 +20,31 @@ const getVideoUrlOfPage = async (page: Page): Promise<string | null> => {
   return null
 }
 
-const getRandomNumber = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1)) + min
+const createEpisodeUrl = (subUrl: string): string =>
+  `https://kissanime.ru/Anime/${subUrl}&s=rapidvideo`
 
-const createEpisodeUrl = (title: string, episode: number): string =>
-  `https://kissanime.ru/Anime/${title}/Episode-${new String(episode).padStart(
-    3,
-    "0"
-  )}?id=${getRandomNumber(10000, 20000)}&s=rapidvideo`
-
-const getVideoUrlOfAnimeEpisode = (
-  title: string,
-  episode: number
-): Promise<string | null> =>
-  goToUrl(createEpisodeUrl(title, episode), getVideoUrlOfPage)
+const createAnimeUrl = (title: string): string =>
+  `https://kissanime.ru/Anime/${title}`
 
 export const getUrlOfAnimeEpisode = async (
-  title: string,
-  episode: number
+  subUrl: string
 ): Promise<string | null> => {
-  const videoUrl = await getVideoUrlOfAnimeEpisode(title, episode)
-  if (videoUrl == null && title.includes("2nd-Season")) {
-    const titleTokens = title.replace("nd-Season", "").split("-")
-    const alternativeTitle = insert(
-      titleTokens.length - 1,
-      "Season",
-      titleTokens
-    ).join("-")
-    return getVideoUrlOfAnimeEpisode(alternativeTitle, episode)
-  } else return videoUrl
+  return goToUrl(createEpisodeUrl(subUrl), getVideoUrlOfPage)
+}
+
+export const getEpisodeUrlsOfAnime = async (title: string) => {
+  const animeUrl = createAnimeUrl(title)
+  return goToUrl(
+    animeUrl,
+    async page =>
+      await page.evaluate(() =>
+        Array.from(
+          document.querySelectorAll("table.listing tbody tr td a")
+        ).map((link: Element) =>
+          link.getAttribute("href")!.replace("/Anime/", "")
+        )
+      )
+  )
 }
 
 export const getNewestAnimeEpisodes = async (): Promise<AnimeRelease[]> =>

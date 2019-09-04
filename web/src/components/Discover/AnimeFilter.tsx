@@ -5,7 +5,7 @@ import React, {
   useRef,
   Ref
 } from "react"
-import { Row, Col, Card, Typography, Rate, Spin, Pagination } from "antd"
+import { Row, Col, Card, Typography, Rate, Spin, Pagination, Icon } from "antd"
 import FilterSelect, { FilterSelectItem } from "../common/FilterSelect"
 import {
   AnimeSeason,
@@ -31,6 +31,7 @@ import {
 
 import "./AnimeFilter.scss"
 import * as AnimeService from "../../services/animeService"
+import { unstable_batchedUpdates } from "react-dom"
 
 const allOption = { text: "All", value: null }
 
@@ -89,6 +90,8 @@ const AnimeCard: React.FC<{
   </Col>
 )
 
+let isInitialFetch = true
+
 export type AnimeFilterProps = PropsWithChildren<{
   appRef: React.MutableRefObject<any>
 }>
@@ -107,7 +110,6 @@ export default function AnimeFilter(props: AnimeFilterProps) {
     [key: number]: boolean
   }>({})
   const [page, setPage] = useState(1)
-  const [isInitialFetch, setIsInitialFetch] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedFromYear, setSelectedFromYear] = useState(null)
   const [selectedToYear, setSelectedToYear] = useState(null)
@@ -132,7 +134,7 @@ export default function AnimeFilter(props: AnimeFilterProps) {
       (key: any) => selectedGenres[key]
     ) as any[]
     setIsLoading(true)
-    if (isInitialFetch === true) setIsInitialFetch(false)
+    if (isInitialFetch === true) isInitialFetch = false
     const abortController = new AbortController()
 
     AnimeService.search(
@@ -148,11 +150,14 @@ export default function AnimeFilter(props: AnimeFilterProps) {
         endDate: selectedToYear && formatDate(new Date(selectedToYear!, 12, 31))
       },
       abortController.signal
-    )
-      .then(setAnimes)
-      .then(() => setIsLoading(false))
+    ).then(result => {
+      unstable_batchedUpdates(() => {
+        setAnimes(result.results)
+        setIsLoading(false)
+      })
+    })
 
-    return abortController.abort
+    return () => abortController.abort()
   }, [
     page,
     selectedGenres,
@@ -262,16 +267,63 @@ export default function AnimeFilter(props: AnimeFilterProps) {
             </div>
           )}
         </Row>
-        <Row>
-          {!isLoading && (
-            <Pagination
-              defaultCurrent={page}
-              onChange={setPage}
-              total={50 * 10}
-              style={{
-                display: "flex",
-                justifyContent: "center"
-              }}></Pagination>
+        <Row style={{ marginTop: "10px" }}>
+          {!isLoading && animes.length !== 0 && (
+            <React.Fragment>
+              <Col span={11}>
+                <span
+                  style={{
+                    cursor: "pointer",
+                    display: page == 1 ? "none" : "inline"
+                  }}
+                  onClick={() => setPage(page - 1)}>
+                  <Icon
+                    type="arrow-left"
+                    style={{
+                      fontSize: ".9em"
+                    }}></Icon>
+                  <Typography.Text
+                    style={{
+                      marginLeft: "10px",
+                      color: "white",
+                      fontSize: "1.1em"
+                    }}>
+                    Previous
+                  </Typography.Text>
+                </span>
+              </Col>
+              <Col span={2}>
+                <span
+                  style={{
+                    fontSize: "1.2em",
+                    color: "white",
+                    display: "block",
+                    textAlign: "center"
+                  }}>
+                  {page}
+                </span>
+              </Col>
+              <Col
+                span={11}
+                style={{
+                  textAlign: "right",
+                  display: animes.length === 0 ? "none" : "inline"
+                }}>
+                <span
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setPage(page + 1)}>
+                  <Typography.Text
+                    style={{
+                      marginRight: "10px",
+                      color: "white",
+                      fontSize: "1.1em"
+                    }}>
+                    Next
+                  </Typography.Text>
+                  <Icon type="arrow-right" style={{ fontSize: ".9em" }}></Icon>
+                </span>
+              </Col>
+            </React.Fragment>
           )}
         </Row>
       </Col>

@@ -8,7 +8,9 @@ import {
   defaultTo,
   cond,
   always,
-  tap
+  tap,
+  omit,
+  pick
 } from "ramda"
 import {
   AnimeType,
@@ -21,6 +23,7 @@ import {
   Anime,
   AnimeSeason
 } from "../entities/Anime"
+import any from "ramda/es/any"
 
 export type SearchAnimeOptions = {
   q?: string
@@ -68,13 +71,17 @@ const generateUrl = curry(
   (url: string, options) => `${url}?${optionsToQueryParams(options)}`
 )
 
+export type SearchAnimeResult = {
+  results: Anime[]
+  last_page: number
+}
 export const searchAnime: (
   options: SearchAnimeOptions
-) => Promise<Anime[]> = pipe(
+) => Promise<SearchAnimeResult> = pipe(
   generateUrl(animeUrl),
   fetch,
   then(responseToJson),
-  then(res => res.results)
+  then(json => pick(["results", "last_page"])(json) as any)
 )
 
 export const getAnimesInSeason: (

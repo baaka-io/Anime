@@ -134,8 +134,8 @@ const router = Router()
       const options: SearchAnimeOptions = queryParamsToSearchAnimeOptions(
         req.query
       )
-      const animes = await searchAnime(options)
-      res.json(animes)
+      const result = await searchAnime(options)
+      res.json(result)
     }
   )
   .get("/releases", async (req, res) => {

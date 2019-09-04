@@ -8,6 +8,7 @@ import {
   MalId,
   Anime
 } from "../entities/Anime"
+import { objectToQueryParams } from "../util/queryParam"
 
 export class AnimeSearchOptions {
   title?: string | null
@@ -27,20 +28,19 @@ export class AnimeSearchOptions {
   magazine?: MalId | null
 }
 
-const baseUrl = (process.env.APP_BASE_URL || "http://localhost:8000") + "/anime"
+export type AnimeSearchResult = {
+  results: Anime[]
+  last_page: number
+}
 
-const optionsToQueryParams = (queryParams: any) =>
-  Object.keys(queryParams)
-    .filter(key => queryParams[key] !== null)
-    .map(key => `${key}=${queryParams[key]}`)
-    .join("&")
+const baseUrl = (process.env.APP_BASE_URL || "http://localhost:8000") + "/anime"
 
 export function search(
   options: AnimeSearchOptions,
   abortSignal?: AbortSignal
-): Promise<Anime[]> {
+): Promise<AnimeSearchResult> {
   return fetch(
-    `${baseUrl}/search?${optionsToQueryParams({
+    `${baseUrl}/search?${objectToQueryParams({
       orderBy: AnimeOrderBy.Score,
       ...options
     })}`,

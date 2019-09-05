@@ -43,8 +43,8 @@ export enum AnimeType {
   Music = "music"
 }
 export enum AnimeSeason {
-  Summer = "summer",
   Spring = "spring",
+  Summer = "summer",
   Fall = "fall",
   Winter = "winter"
 }

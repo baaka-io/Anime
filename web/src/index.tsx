@@ -6,6 +6,10 @@ import store from "./store"
 import App from "./components/App"
 import "./global.scss"
 
+if (process.env.NODE_ENV === "development") {
+  document.title = "DEV - Baaka.io"
+}
+
 ReactDOM.render(
   <Provider store={store}>
     <App />

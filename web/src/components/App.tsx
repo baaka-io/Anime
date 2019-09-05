@@ -6,9 +6,11 @@ import Navbar from "./Navbar"
 import { BrowserRouter as Router, Route } from "react-router-dom"
 
 import "./App.scss"
+import Season from "./Season/Season"
 
 export default hot(module)(function App() {
   const ref = useRef(null)
+
   return (
     <div className="App" ref={ref}>
       <Router>
@@ -20,6 +22,7 @@ export default hot(module)(function App() {
             <Discover {...props} appRef={ref}></Discover>
           )}></Route>
         <Route path="/detail" exact component={Detail}></Route>
+        <Route path="/season" exact component={Season}></Route>
       </Router>
     </div>
   )

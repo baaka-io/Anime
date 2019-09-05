@@ -1,0 +1,16 @@
+.anime-card-grid_loading {
+  div.ant-spin {
+    display: block;
+    margin: 50px auto;
+  }
+}
+
+.anime-card-grid_filters {
+  padding-bottom: 30px;
+}
+
+.anime-card-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 30px;
+}

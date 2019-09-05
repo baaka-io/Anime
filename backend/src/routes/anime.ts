@@ -14,7 +14,11 @@ import {
   IsBoolean
 } from "class-validator"
 import { ValidatedRequest, validateQuery } from "../middlewares/validation"
-import { searchAnime, SearchAnimeOptions } from "../services/jikan"
+import {
+  searchAnime,
+  SearchAnimeOptions,
+  getAnimesInSeason
+} from "../services/jikan"
 //@ts-ignore
 import proxy from "http-proxy-stream"
 import {
@@ -130,6 +134,11 @@ const router = Router()
     const { title } = req.query
     const urls = await getEpisodeUrlsOfAnime(title)
     res.json(urls)
+  })
+  .get("/season", async (req, res) => {
+    const { year, season } = req.query
+    const animes = await getAnimesInSeason(year, season)
+    res.json(animes)
   })
   .get(
     "/search",

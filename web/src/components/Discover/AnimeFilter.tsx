@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useState, useEffect, useRef } from "react"
-import { Row, Col, Typography, Spin, Icon } from "antd"
-import FilterSelect, { FilterSelectItem } from "../common/FilterSelect"
+import { Row, Col, Typography } from "antd"
 import {
-  AnimeSeason,
   AnimeStatus,
   AnimeType,
   Anime,
@@ -10,58 +8,19 @@ import {
   AnimeGenre
 } from "../../entities/Anime"
 import { enumToKeyValuePairs } from "../../util/enum"
-import {
-  range,
-  reverse,
-  append,
-  pipe,
-  map,
-  prepend,
-  cond,
-  equals,
-  always,
-  T
-} from "ramda"
-
-import "./AnimeFilter.scss"
+import { reverse } from "ramda"
 import * as AnimeService from "../../services/animeService"
 import { unstable_batchedUpdates } from "react-dom"
 import slug from "slug"
 import { History } from "history"
+import AnimeCardGrid from "../common/AnimeCardGrid"
+import {
+  generateFilterSelectItemsUntilYear,
+  enumToFilterSelectItems,
+  generateFilterSelectItemsFromRange
+} from "../../util/animeFilter"
 
-const allOption = { text: "All", value: null }
-
-const generateFilterSelectItemsFromRange = (from: number, to: number) =>
-  pipe(
-    () => range(from, to),
-    map<number, FilterSelectItem>(year => ({
-      text: year.toString(),
-      value: year
-    })),
-    append(allOption)
-  )()
-
-const generateFilterSelectItemsUntilYear = (year: number) =>
-  generateFilterSelectItemsFromRange(2002, year + 1)
-
-const enumToFilterSelectItems = (inum: any) =>
-  prepend<FilterSelectItem>(
-    allOption,
-    enumToKeyValuePairs(inum).map(pair => ({
-      text: pair.key,
-      value: pair.value
-    }))
-  )
-
-const seasonToMonthRange: (
-  season: AnimeSeason | null
-) => [number, number] = cond<any, [number, number]>([
-  [equals(AnimeSeason.Winter), always([12, 2])],
-  [equals(AnimeSeason.Spring), always([3, 5])],
-  [equals(AnimeSeason.Summer), always([6, 8])],
-  [equals(AnimeSeason.Fall), always([9, 11])],
-  [T, always([0, 11])]
-])
+import "./AnimeFilter.scss"
 
 const formatDate = (date: Date) =>
   `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -70,26 +29,6 @@ const formatDate = (date: Date) =>
     .getDate()
     .toString()
     .padStart(2, "0")}`
-
-const AnimeCard: React.FC<{
-  title: string
-  onClick: () => void
-  image: string
-  score: number
-}> = props => (
-  <Col span={4} className="anime-filter_anime-card">
-    <Row>
-      <img
-        src={props.image}
-        width="200px"
-        height="300px"
-        onClick={props.onClick}></img>
-    </Row>
-    <Row>
-      <Typography.Text>{props.title}</Typography.Text>
-    </Row>
-  </Col>
-)
 
 export type AnimeFilterProps = PropsWithChildren<{
   appRef: React.MutableRefObject<any>
@@ -119,6 +58,45 @@ export default function AnimeFilter(props: AnimeFilterProps) {
   const [selectedType, setSelectedType] = useState(AnimeType.Tv)
   const [selectedMinimumScore, setSelectedMinimumScore] = useState(null)
   const [animes, setAnimes] = useState<Anime>([])
+
+  const filters = [
+    {
+      label: "From",
+      items: yearItems,
+      onChange: setSelectedFromYear
+    },
+    {
+      label: "To",
+      items: yearItems,
+      onChange: setSelectedToYear
+    },
+    {
+      label: "Status",
+      items: statusItems,
+      onChange: setSelectedStatus
+    },
+    {
+      label: "Rating",
+      items: ratingItems,
+      onChange: setSelectedRating
+    },
+    {
+      label: "Type",
+      items: typeItems,
+      onChange: setSelectedType
+    },
+    {
+      label: "Min. Score",
+      items: scoreItems,
+      onChange: setSelectedMinimumScore
+    }
+  ]
+
+  const goToDetailPage = (anime: Anime) => {
+    props.history.push(
+      "/detail?title=" + slug(anime.title.replace(";", " "), { symbols: false })
+    )
+  }
 
   useEffect(() => {
     if (!isInitialFetch && props.appRef && animeGridRef.current !== null) {
@@ -211,128 +189,14 @@ export default function AnimeFilter(props: AnimeFilterProps) {
         </Row>
       </Col>
       <Col span={20}>
-        <Row type="flex" justify="center" style={{ marginBottom: "30px" }}>
-          <Col span={4}>
-            <FilterSelect
-              label="From"
-              items={yearItems}
-              onChange={setSelectedFromYear}></FilterSelect>
-          </Col>
-          <Col span={4}>
-            <FilterSelect
-              label="To"
-              items={yearItems}
-              onChange={setSelectedToYear}></FilterSelect>
-          </Col>
-          <Col span={4}>
-            <FilterSelect
-              label="Status"
-              items={statusItems}
-              onChange={setSelectedStatus}></FilterSelect>
-          </Col>
-          <Col span={4}>
-            <FilterSelect
-              label="Rating"
-              items={ratingItems}
-              onChange={setSelectedRating}></FilterSelect>
-          </Col>
-          <Col span={4}>
-            <FilterSelect
-              label="Type"
-              defaultValue={AnimeType.Tv}
-              items={typeItems}
-              onChange={setSelectedType}></FilterSelect>
-          </Col>
-          <Col span={4}>
-            <FilterSelect
-              label="Min. Score"
-              items={scoreItems}
-              onChange={setSelectedMinimumScore}></FilterSelect>
-          </Col>
-        </Row>
-        <Row>
-          {isLoading && (
-            <div className="anime-filter_anime-grid-loading">
-              <Spin></Spin>
-            </div>
-          )}
-          {!isLoading && (
-            <div ref={animeGridRef} className="anime-filter_anime-card-grid">
-              {animes.map((anime: any, i: number) => (
-                <AnimeCard
-                  onClick={() =>
-                    props.history.push(
-                      "/detail?title=" +
-                        slug(anime.title.replace(";", " "), { symbols: false })
-                    )
-                  }
-                  key={i}
-                  score={anime.score}
-                  title={anime.title}
-                  image={anime.image_url}></AnimeCard>
-              ))}
-            </div>
-          )}
-        </Row>
-        <Row style={{ marginTop: "10px" }}>
-          {!isLoading && animes.length !== 0 && (
-            <React.Fragment>
-              <Col span={11}>
-                <span
-                  style={{
-                    cursor: "pointer",
-                    display: page == 1 ? "none" : "inline"
-                  }}
-                  onClick={() => setPage(page - 1)}>
-                  <Icon
-                    type="arrow-left"
-                    style={{
-                      fontSize: ".9em"
-                    }}></Icon>
-                  <Typography.Text
-                    style={{
-                      marginLeft: "10px",
-                      color: "white",
-                      fontSize: "1.1em"
-                    }}>
-                    Previous
-                  </Typography.Text>
-                </span>
-              </Col>
-              <Col span={2}>
-                <span
-                  style={{
-                    fontSize: "1.2em",
-                    color: "white",
-                    display: "block",
-                    textAlign: "center"
-                  }}>
-                  {page}
-                </span>
-              </Col>
-              <Col
-                span={11}
-                style={{
-                  textAlign: "right",
-                  display: animes.length === 0 ? "none" : "inline"
-                }}>
-                <span
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setPage(page + 1)}>
-                  <Typography.Text
-                    style={{
-                      marginRight: "10px",
-                      color: "white",
-                      fontSize: "1.1em"
-                    }}>
-                    Next
-                  </Typography.Text>
-                  <Icon type="arrow-right" style={{ fontSize: ".9em" }}></Icon>
-                </span>
-              </Col>
-            </React.Fragment>
-          )}
-        </Row>
+        <AnimeCardGrid
+          animes={animes}
+          isLoading={isLoading}
+          page={page}
+          filters={filters}
+          onGoBack={() => setPage(page - 1)}
+          onGoForward={() => setPage(page + 1)}
+          onAnimeCardClicked={goToDetailPage}></AnimeCardGrid>
       </Col>
     </Row>
   )

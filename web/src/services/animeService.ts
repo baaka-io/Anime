@@ -6,7 +6,8 @@ import {
   AnimeOrderBy,
   AnimeSort,
   MalId,
-  Anime
+  Anime,
+  AnimeSeason
 } from "../entities/Anime"
 import { objectToQueryParams } from "../util/queryParam"
 
@@ -54,6 +55,14 @@ export function search(
     })}`,
     abortSignal
   )
+}
+
+export function searchBySeason(
+  year: number,
+  season: AnimeSeason,
+  abortSignal?: AbortSignal
+): Promise<Anime[]> {
+  return request("get", `season?year=${year}&season=${season}`, abortSignal)
 }
 
 export function getEpisodes(title: string, abortSignal?: AbortSignal) {

@@ -1,25 +1,3 @@
-.anime-filter_anime-card {
-  min-width: 100%;
-  cursor: pointer;
-
-  span {
-    color: white;
-  }
-}
-
-.anime-filter_anime-grid-loading {
-  div.ant-spin {
-    display: block;
-    margin: 50px auto;
-  }
-}
-
 .anime-filter_genre {
   cursor: pointer;
-}
-
-.anime-filter_anime-card-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 30px;
 }

@@ -18,7 +18,7 @@
     "node-fetch": "^2.6.0",
     "ramda": "^0.26.1",
     "slug": "^1.1.0",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "source-scraper": "^1.2.14",
     "tsc-watch": "^2.4.0"
   },
